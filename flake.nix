@@ -9,7 +9,7 @@
     in
     {
       packages.x86_64-linux = {
-        every-flake-you-make = pkgs.writeTextFile rec {
+        every-flake-you-make = pkgs.writeTextFile {
           name = "every-flake-you-make";
           meta.origin = "https://youtu.be/OMOGaugKpzs";
           text = ''
@@ -18,11 +18,9 @@
             Every build you break
             Every store you collect
             Eelco's watching you
-
-            <${meta.origin}>
           '';
         };
-        nixy-boy = pkgs.writeTextFile rec {
+        nixy-boy = pkgs.writeTextFile {
           name = "nixy-boy";
           meta.origin = "https://youtu.be/ZyhrYis509A";
           text = ''
@@ -32,15 +30,17 @@
             Imagination, Nix is your creation
 
             Come on Eelco, Let's go building
-
-            <${meta.origin}>
           '';
         };
       };
       apps.x86_64-linux = builtins.mapAttrs
         (song: lyrics: {
           type = "app";
-          program = toString (pkgs.writeScript "view-${song}" "${pkgs.coreutils}/bin/cat ${lyrics}");
+          program = toString (pkgs.writeScript "listen-${song}" ''
+            ${pkgs.lib.getExe pkgs.espeak-ng} -f ${lyrics} &
+            ${pkgs.coreutils}/bin/cat ${lyrics}
+          ''
+          );
         })
         inputs.self.packages.x86_64-linux;
     };
