@@ -37,5 +37,11 @@
           '';
         };
       };
+      apps.x86_64-linux = builtins.mapAttrs
+        (song: lyrics: {
+          type = "app";
+          program = toString (pkgs.writeScript "view-${song}" "${pkgs.coreutils}/bin/cat ${lyrics}");
+        })
+        inputs.self.packages.x86_64-linux;
     };
 }
